@@ -181,6 +181,126 @@
 // export default router;
 
 
+// import express from "express";
+// import User from "../models/User.js";
+// import bcrypt from "bcryptjs";
+
+// const router = express.Router();
+
+// // Get all users (optionally with limit)
+// router.get("/api/users", async (req, res) => {
+//   try {
+//     const { limit } = req.query;
+//     const parsedLimit = limit ? Number(limit) : null;
+
+//     if (parsedLimit && (isNaN(parsedLimit) || parsedLimit <= 0)) {
+//       return res.status(400).json({ message: "Query 'limit' must be a positive number" });
+//     }
+
+//     const users = parsedLimit
+//       ? await User.find().limit(parsedLimit)
+//       : await User.find();
+
+//     res.status(200).json(users);
+//   } catch (error) {
+//     res.status(500).json({ message: `Error fetching users: ${error}` });
+//   }
+// });
+
+// // Get user by ID
+// router.get("/api/users/:id", async (req, res) => {
+//   try {
+//     const user = await User.findById(req.params.id);
+//     user
+//       ? res.status(200).json(user)
+//       : res.status(404).json({ message: `User with ID ${req.params.id} not found` });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error fetching user: ${error}` });
+//   }
+// });
+
+// // Delete user by ID
+// router.delete("/api/users/:id", async (req, res) => {
+//   try {
+//     const deletedUser = await User.findByIdAndDelete(req.params.id);
+//     deletedUser
+//       ? res.status(200).json({ message: `User with ID ${req.params.id} deleted` })
+//       : res.status(404).json({ message: `User with ID ${req.params.id} not found` });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error deleting user: ${error}` });
+//   }
+// });
+
+// // Update user
+// router.put("/api/users/:id", async (req, res) => {
+//   try {
+//     const updateData = { ...req.body };
+
+//     if (updateData.password) {
+//       const salt = await bcrypt.genSalt(10);
+//       updateData.password = await bcrypt.hash(updateData.password, salt);
+//     }
+
+//     const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
+//     updatedUser
+//       ? res.status(200).json(updatedUser)
+//       : res.status(404).json({ message: `User with ID ${req.params.id} not found` });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error updating user: ${error}` });
+//   }
+// });
+
+// // Register user
+// router.post("/api/users", async (req, res) => {
+//   const { userName, password, jobrole, biodata } = req.body;
+
+//   if (!userName || !password || !biodata) {
+//     return res.status(400).json({ message: "userName, password, and biodata are required" });
+//   }
+
+//   try {
+//     const existingUser = await User.findOne({ userName });
+//     if (existingUser) return res.status(409).json({ message: "UserName already exists" });
+
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(password, salt);
+
+//     const newUser = new User({ userName, password: hashedPassword, jobrole, biodata });
+//     const savedUser = await newUser.save();
+//     res.status(201).json(savedUser);
+//   } catch (error) {
+//     res.status(500).json({ message: `Error creating new user: ${error}` });
+//   }
+// });
+
+// // Login user
+// router.post("/api/users/login", async (req, res) => {
+//   const { userName, password } = req.body;
+
+//   try {
+//     const user = await User.findOne({ userName });
+//     if (!user) return res.status(404).json({ message: `User ${userName} not found` });
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+
+//     res.status(200).json({ message: "Login successful", user });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: `Login error: ${error}` });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
 import express from "express";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
@@ -188,7 +308,7 @@ import bcrypt from "bcryptjs";
 const router = express.Router();
 
 // Get all users (optionally with limit)
-router.get("/api/users", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const { limit } = req.query;
     const parsedLimit = limit ? Number(limit) : null;
@@ -208,7 +328,7 @@ router.get("/api/users", async (req, res) => {
 });
 
 // Get user by ID
-router.get("/api/users/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     user
@@ -220,7 +340,7 @@ router.get("/api/users/:id", async (req, res) => {
 });
 
 // Delete user by ID
-router.delete("/api/users/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     deletedUser
@@ -232,7 +352,7 @@ router.delete("/api/users/:id", async (req, res) => {
 });
 
 // Update user
-router.put("/api/users/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const updateData = { ...req.body };
 
@@ -252,7 +372,7 @@ router.put("/api/users/:id", async (req, res) => {
 });
 
 // Register user
-router.post("/api/users", async (req, res) => {
+router.post("/", async (req, res) => {
   const { userName, password, jobrole, biodata } = req.body;
 
   if (!userName || !password || !biodata) {
@@ -261,7 +381,9 @@ router.post("/api/users", async (req, res) => {
 
   try {
     const existingUser = await User.findOne({ userName });
-    if (existingUser) return res.status(409).json({ message: "UserName already exists" });
+    if (existingUser) {
+      return res.status(409).json({ message: "UserName already exists" });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -275,15 +397,19 @@ router.post("/api/users", async (req, res) => {
 });
 
 // Login user
-router.post("/api/users/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { userName, password } = req.body;
 
   try {
     const user = await User.findOne({ userName });
-    if (!user) return res.status(404).json({ message: `User ${userName} not found` });
+    if (!user) {
+      return res.status(404).json({ message: `User ${userName} not found` });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
 
     res.status(200).json({ message: "Login successful", user });
   } catch (error) {
